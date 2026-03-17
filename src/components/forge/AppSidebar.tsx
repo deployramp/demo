@@ -1,13 +1,12 @@
-import { LayoutGrid, Layers, Settings, Flag, BarChart3, Zap } from "lucide-react";
+import { LayoutGrid, Layers, Settings, BarChart3, Zap } from "lucide-react";
 import { projects } from "@/lib/mock-data";
 
 interface AppSidebarProps {
   activeProject: string;
   onProjectChange: (id: string) => void;
-  onOpenFlags: () => void;
 }
 
-export function AppSidebar({ activeProject, onProjectChange, onOpenFlags }: AppSidebarProps) {
+export function AppSidebar({ activeProject, onProjectChange }: AppSidebarProps) {
   return (
     <aside className="w-60 h-screen border-r border-border bg-sidebar flex flex-col">
       {/* Logo */}
@@ -57,13 +56,6 @@ export function AppSidebar({ activeProject, onProjectChange, onOpenFlags }: AppS
 
       {/* Footer */}
       <div className="border-t border-border p-2 flex flex-col gap-0.5">
-        <button
-          onClick={onOpenFlags}
-          className="flex items-center gap-2 px-2 py-1.5 text-sm text-sidebar-foreground hover:bg-secondary/50 transition-colors rounded"
-        >
-          <Flag className="w-4 h-4 text-primary" />
-          <span>Feature Flags</span>
-        </button>
         <button className="flex items-center gap-2 px-2 py-1.5 text-sm text-sidebar-foreground hover:bg-secondary/50 transition-colors rounded">
           <Settings className="w-4 h-4" />
           <span>Settings</span>

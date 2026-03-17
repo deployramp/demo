@@ -14,14 +14,12 @@ import { BoardView } from "@/components/forge/BoardView";
 import { TimelineView } from "@/components/forge/TimelineView";
 import { TaskDetail } from "@/components/forge/TaskDetail";
 import { BulkActions } from "@/components/forge/BulkActions";
-import { FlagPanel } from "@/components/forge/FlagPanel";
 
 const Index = () => {
   const [activeProject, setActiveProject] = useState("forge");
   const [view, setView] = useState<ViewMode>("list");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
-  const [flagPanelOpen, setFlagPanelOpen] = useState(false);
   const { flags } = useFlags();
 
   const projectTasks = useMemo(
@@ -58,7 +56,6 @@ const Index = () => {
       <AppSidebar
         activeProject={activeProject}
         onProjectChange={setActiveProject}
-        onOpenFlags={() => setFlagPanelOpen(true)}
       />
 
       {/* Main */}
@@ -115,8 +112,6 @@ const Index = () => {
       {/* Bulk Actions */}
       <BulkActions selectedCount={selectedIds.size} onClear={() => setSelectedIds(new Set())} />
 
-      {/* Flag Panel */}
-      <FlagPanel open={flagPanelOpen} onClose={() => setFlagPanelOpen(false)} />
     </div>
   );
 };

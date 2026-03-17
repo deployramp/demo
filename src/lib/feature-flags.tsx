@@ -1,42 +1,47 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { init, flag } from "@deployramp/sdk";
 import type { FeatureFlags } from "./types";
 
-const defaultFlags: FeatureFlags = {
-  showPriority: true,
-  showAvatars: true,
-  showAiSummary: true,
-  showTimeline: false,
-  showBulkActions: true,
-  showPriorityMatrix: false,
-  showEstimates: true,
-  showLabels: true,
-  experimentalUI: false,
-};
+init({
+  publicToken: import.meta.env.VITE_DEPLOYRAMP_TOKEN ?? "demo",
+});
+
+function readFlags(): FeatureFlags {
+  return {
+    showPriority: flag("showPriority"),
+    showAvatars: flag("showAvatars"),
+    showAiSummary: flag("showAiSummary"),
+    showTimeline: flag("showTimeline"),
+    showBulkActions: flag("showBulkActions"),
+    showPriorityMatrix: flag("showPriorityMatrix"),
+    showEstimates: flag("showEstimates"),
+    showLabels: flag("showLabels"),
+    experimentalUI: flag("experimentalUI"),
+  };
+}
 
 interface FlagContextValue {
   flags: FeatureFlags;
-  setFlag: (key: keyof FeatureFlags, value: boolean) => void;
-  toggleFlag: (key: keyof FeatureFlags) => void;
-  resetFlags: () => void;
 }
 
 const FlagContext = createContext<FlagContextValue | null>(null);
 
 export function FlagProvider({ children }: { children: React.ReactNode }) {
-  const [flags, setFlags] = useState<FeatureFlags>(defaultFlags);
+  const [flags, setFlags] = useState<FeatureFlags>(readFlags);
 
-  const setFlag = useCallback((key: keyof FeatureFlags, value: boolean) => {
-    setFlags((prev) => ({ ...prev, [key]: value }));
+  useEffect(() => {
+    // Re-read after SDK finishes initial fetch from DeployRamp
+    const t = setTimeout(() => setFlags(readFlags()), 500);
+    // Poll to pick up real-time WebSocket-driven updates
+    const interval = setInterval(() => setFlags(readFlags()), 5000);
+    return () => {
+      clearTimeout(t);
+      clearInterval(interval);
+    };
   }, []);
-
-  const toggleFlag = useCallback((key: keyof FeatureFlags) => {
-    setFlags((prev) => ({ ...prev, [key]: !prev[key] }));
-  }, []);
-
-  const resetFlags = useCallback(() => setFlags(defaultFlags), []);
 
   return (
-    <FlagContext.Provider value={{ flags, setFlag, toggleFlag, resetFlags }}>
+    <FlagContext.Provider value={{ flags }}>
       {children}
     </FlagContext.Provider>
   );
