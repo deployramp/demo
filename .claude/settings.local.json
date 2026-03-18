@@ -3,7 +3,8 @@
     "allow": [
       "Bash(bun add:*)",
       "Bash(npm install:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(bun install:*)"
     ]
   }
 }
