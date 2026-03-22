@@ -20,12 +20,25 @@ const Index = () => {
   const [view, setView] = useState<ViewMode>("list");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const { flags } = useFlags();
 
   const projectTasks = useMemo(
     () => activeProject === "all" ? allTasks : allTasks.filter((t) => t.project === activeProject),
     [activeProject]
   );
+
+  const filteredTasks = useMemo(() => {
+    if (!searchQuery.trim()) return projectTasks;
+    const q = searchQuery.toLowerCase();
+    return projectTasks.filter(
+      (t) =>
+        t.title.toLowerCase().includes(q) ||
+        t.key.toLowerCase().includes(q) ||
+        t.labels.some((l) => l.toLowerCase().includes(q)) ||
+        t.description?.toLowerCase().includes(q)
+    );
+  }, [projectTasks, searchQuery]);
 
   const project = projects.find((p) => p.id === activeProject);
   const openTask = openTaskId ? allTasks.find((t) => t.id === openTaskId) : null;
@@ -46,10 +59,10 @@ const Index = () => {
     return order
       .map((status) => ({
         status,
-        tasks: projectTasks.filter((t) => t.status === status),
+        tasks: filteredTasks.filter((t) => t.status === status),
       }))
       .filter((g) => g.tasks.length > 0);
-  }, [projectTasks]);
+  }, [filteredTasks]);
 
   return (
     <div className="flex h-screen w-full bg-background overflow-hidden">
@@ -65,7 +78,9 @@ const Index = () => {
           onViewChange={setView}
           projectName={activeProject === "all" ? "All Tasks" : (project?.name || "")}
           sprint={currentSprint}
-          taskCount={projectTasks.length}
+          taskCount={filteredTasks.length}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
         />
 
         <AiSummary />
@@ -97,10 +112,10 @@ const Index = () => {
           </div>
         )}
 
-        {view === "board" && <BoardView tasks={projectTasks} onOpen={setOpenTaskId} />}
+        {view === "board" && <BoardView tasks={filteredTasks} onOpen={setOpenTaskId} />}
 
         {view === "timeline" && flags.showTimeline && (
-          <TimelineView tasks={projectTasks} onOpen={setOpenTaskId} />
+          <TimelineView tasks={filteredTasks} onOpen={setOpenTaskId} />
         )}
       </div>
 
