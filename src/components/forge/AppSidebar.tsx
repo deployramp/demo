@@ -40,7 +40,14 @@ export function AppSidebar({ activeProject, onProjectChange }: AppSidebarProps) 
         <div className="px-3 mt-4 mb-1">
           <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Views</span>
         </div>
-        <button className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-sidebar-foreground hover:bg-secondary/50 transition-colors">
+        <button
+          onClick={() => onProjectChange("all")}
+          className={`w-full flex items-center gap-2 px-3 py-1.5 text-sm transition-colors duration-150 ${
+            activeProject === "all"
+              ? "bg-secondary text-foreground"
+              : "text-sidebar-foreground hover:bg-secondary/50"
+          }`}
+        >
           <LayoutGrid className="w-4 h-4" />
           <span>All Tasks</span>
         </button>

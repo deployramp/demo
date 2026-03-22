@@ -23,13 +23,13 @@ const Index = () => {
   const { flags } = useFlags();
 
   const projectTasks = useMemo(
-    () => allTasks.filter((t) => t.project === activeProject),
+    () => activeProject === "all" ? allTasks : allTasks.filter((t) => t.project === activeProject),
     [activeProject]
   );
 
   const project = projects.find((p) => p.id === activeProject);
   const openTask = openTaskId ? allTasks.find((t) => t.id === openTaskId) : null;
-  const currentSprint = projectTasks[0]?.sprint || "Sprint 12";
+  const currentSprint = activeProject === "all" ? "All Projects" : (projectTasks[0]?.sprint || "Sprint 12");
 
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {
@@ -63,7 +63,7 @@ const Index = () => {
         <MetaBar
           view={view}
           onViewChange={setView}
-          projectName={project?.name || ""}
+          projectName={activeProject === "all" ? "All Tasks" : (project?.name || "")}
           sprint={currentSprint}
           taskCount={projectTasks.length}
         />
