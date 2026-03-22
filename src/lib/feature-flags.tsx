@@ -1,24 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { init, flag } from "@deployramp/sdk";
+import React, { createContext, useContext } from "react";
+import { useFlag } from "@deployramp/sdk/react";
 import type { FeatureFlags } from "./types";
-
-init({
-  publicToken: import.meta.env.VITE_DEPLOYRAMP_TOKEN ?? "demo",
-});
-
-function readFlags(): FeatureFlags {
-  return {
-    showPriority: flag("showPriority"),
-    showAvatars: flag("showAvatars"),
-    showAiSummary: flag("showAiSummary"),
-    showTimeline: flag("showTimeline"),
-    showBulkActions: flag("showBulkActions"),
-    showPriorityMatrix: flag("showPriorityMatrix"),
-    showEstimates: flag("showEstimates"),
-    showLabels: flag("showLabels"),
-    experimentalUI: flag("experimentalUI"),
-  };
-}
 
 interface FlagContextValue {
   flags: FeatureFlags;
@@ -27,18 +9,17 @@ interface FlagContextValue {
 const FlagContext = createContext<FlagContextValue | null>(null);
 
 export function FlagProvider({ children }: { children: React.ReactNode }) {
-  const [flags, setFlags] = useState<FeatureFlags>(readFlags);
-
-  useEffect(() => {
-    // Re-read after SDK finishes initial fetch from DeployRamp
-    const t = setTimeout(() => setFlags(readFlags()), 500);
-    // Poll to pick up real-time WebSocket-driven updates
-    const interval = setInterval(() => setFlags(readFlags()), 5000);
-    return () => {
-      clearTimeout(t);
-      clearInterval(interval);
-    };
-  }, []);
+  const flags: FeatureFlags = {
+    showPriority: useFlag("showPriority"),
+    showAvatars: useFlag("showAvatars"),
+    showAiSummary: useFlag("showAiSummary"),
+    showTimeline: useFlag("showTimeline"),
+    showBulkActions: useFlag("showBulkActions"),
+    showPriorityMatrix: useFlag("showPriorityMatrix"),
+    showEstimates: useFlag("showEstimates"),
+    showLabels: useFlag("showLabels"),
+    experimentalUI: useFlag("experimentalUI"),
+  };
 
   return (
     <FlagContext.Provider value={{ flags }}>
