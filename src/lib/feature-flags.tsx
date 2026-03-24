@@ -19,6 +19,7 @@ export function FlagProvider({ children }: { children: React.ReactNode }) {
     showEstimates: useFlag("showEstimates"),
     showLabels: useFlag("showLabels"),
     experimentalUI: useFlag("experimentalUI"),
+    taskSorting: useFlag("task-sorting"),
   };
 
   return (
