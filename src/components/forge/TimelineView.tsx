@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import type { Task } from "@/lib/types";
 import { StatusIcon } from "./StatusIcon";
 import { useFlags } from "@/lib/feature-flags";
@@ -7,11 +8,33 @@ interface TimelineViewProps {
   onOpen: (id: string) => void;
 }
 
-const weeks = ["Mar 9", "Mar 16", "Mar 23", "Mar 30"];
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+const NUM_WEEKS = 4;
+
+function getMondayOf(date: Date): Date {
+  const d = new Date(date);
+  const day = d.getDay(); // 0=Sun, 1=Mon, ...
+  const diff = (day === 0 ? -6 : 1 - day);
+  d.setDate(d.getDate() + diff);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function formatWeek(date: Date): string {
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
 
 export function TimelineView({ tasks, onOpen }: TimelineViewProps) {
   const { flags } = useFlags();
   const timelineTasks = tasks.filter((t) => t.dueDate);
+
+  const { weeks, weekStarts } = useMemo(() => {
+    const dueDates = timelineTasks.map((t) => new Date(t.dueDate!).getTime());
+    const earliest = dueDates.length > 0 ? Math.min(...dueDates) : Date.now();
+    const anchor = getMondayOf(new Date(earliest));
+    const starts = Array.from({ length: NUM_WEEKS }, (_, i) => new Date(anchor.getTime() + i * WEEK_MS));
+    return { weeks: starts.map(formatWeek), weekStarts: starts };
+  }, [timelineTasks]);
 
   return (
     <div className="flex-1 overflow-auto custom-scrollbar">
@@ -29,7 +52,13 @@ export function TimelineView({ tasks, onOpen }: TimelineViewProps) {
 
       {/* Rows */}
       {timelineTasks.map((task) => {
-        const weekIdx = Math.min(Math.floor(Math.random() * 4), 3);
+        const dueMs = new Date(task.dueDate!).getTime();
+        const weekIdx = Math.max(0, Math.min(NUM_WEEKS - 1,
+          weekStarts.findIndex((ws, i) => {
+            const next = weekStarts[i + 1];
+            return dueMs >= ws.getTime() && (!next || dueMs < next.getTime());
+          })
+        ));
         const barWidth = (task.estimate || 3) * 8;
         return (
           <div
