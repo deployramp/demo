@@ -24,6 +24,9 @@ const Index = () => {
   const [sortBy, setSortBy] = useState<SortOption>("manual");
   const { flags } = useFlags();
 
+  // Feature flag: task-sorting
+  const enableTaskSorting = flags.taskSorting;
+
   const projectTasks = useMemo(
     () => activeProject === "all" ? allTasks : allTasks.filter((t) => t.project === activeProject),
     [activeProject]
@@ -42,7 +45,7 @@ const Index = () => {
   }, [projectTasks, searchQuery]);
 
   const sortedTasks = useMemo(() => {
-    if (sortBy === "manual") return filteredTasks;
+    if (!enableTaskSorting || sortBy === "manual") return filteredTasks;
     const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3, none: 4 };
     return [...filteredTasks].sort((a, b) => {
       switch (sortBy) {
@@ -62,7 +65,7 @@ const Index = () => {
           return 0;
       }
     });
-  }, [filteredTasks, sortBy]);
+  }, [filteredTasks, sortBy, enableTaskSorting]);
 
   const project = projects.find((p) => p.id === activeProject);
   const openTask = openTaskId ? allTasks.find((t) => t.id === openTaskId) : null;
@@ -105,7 +108,7 @@ const Index = () => {
           taskCount={filteredTasks.length}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
-          sortBy={sortBy}
+          sortBy={enableTaskSorting ? sortBy : "manual"}
           onSortChange={setSortBy}
         />
 

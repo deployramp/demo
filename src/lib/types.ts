@@ -29,6 +29,7 @@ export interface FeatureFlags {
   showEstimates: boolean;
   showLabels: boolean;
   experimentalUI: boolean;
+  taskSorting: boolean;
 }
 
 export interface Project {
