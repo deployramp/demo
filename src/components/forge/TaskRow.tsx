@@ -75,7 +75,7 @@ export function TaskRow({ task, selected, onSelect, onOpen }: TaskRowProps) {
       )}
 
       {/* Estimate */}
-      {flags.showEstimates && task.estimate && (
+      {task.estimate && (
         <span className="text-[10px] font-mono text-muted-foreground w-6 text-right">
           {task.estimate}p
         </span>

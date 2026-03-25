@@ -78,9 +78,7 @@ export function TimelineView({ tasks, onOpen }: TimelineViewProps) {
                     className="h-5 rounded-sm bg-primary/20 border border-primary/30 flex items-center px-1.5"
                     style={{ width: Math.min(barWidth, 100) + "%" }}
                   >
-                    {flags.showEstimates && (
-                      <span className="text-[9px] font-mono text-primary">{task.estimate}p</span>
-                    )}
+                    <span className="text-[9px] font-mono text-primary">{task.estimate}p</span>
                   </div>
                 )}
               </div>

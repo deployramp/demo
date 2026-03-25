@@ -60,12 +60,10 @@ export function TaskDetail({ task, onClose }: TaskDetailProps) {
               <span className="text-muted-foreground">Unassigned</span>
             )}
           </div>
-          {flags.showEstimates && (
-            <div>
-              <span className="text-muted-foreground block mb-1">Estimate</span>
-              <span className="font-mono text-foreground">{task.estimate ?? "—"} pts</span>
-            </div>
-          )}
+          <div>
+            <span className="text-muted-foreground block mb-1">Estimate</span>
+            <span className="font-mono text-foreground">{task.estimate ?? "—"} pts</span>
+          </div>
           <div>
             <span className="text-muted-foreground block mb-1">Sprint</span>
             <span className="text-foreground">{task.sprint}</span>
