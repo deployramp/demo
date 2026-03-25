@@ -50,7 +50,7 @@ export function BoardView({ tasks, onOpen }: BoardViewProps) {
                         <span key={l} className="text-[10px] bg-secondary text-muted-foreground px-1.5 py-0.5 rounded">{l}</span>
                       ))}
                       <span className="flex-1" />
-                      {flags.showEstimates && task.estimate && (
+                      {task.estimate && (
                         <span className="text-[10px] font-mono text-muted-foreground">{task.estimate}p</span>
                       )}
                       {flags.showAvatars && task.assignee && <UserAvatar userId={task.assignee} />}

@@ -26,7 +26,6 @@ export interface FeatureFlags {
   showTimeline: boolean;
   showBulkActions: boolean;
   showPriorityMatrix: boolean;
-  showEstimates: boolean;
   showLabels: boolean;
   experimentalUI: boolean;
   taskSorting: boolean;
