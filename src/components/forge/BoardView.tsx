@@ -40,7 +40,7 @@ export function BoardView({ tasks, onOpen }: BoardViewProps) {
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] font-mono text-muted-foreground">{task.key}</span>
-                      {flags.showPriority && task.priority !== "none" && (
+                      {task.priority !== "none" && (
                         <PriorityBadge priority={task.priority} />
                       )}
                     </div>

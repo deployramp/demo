@@ -10,7 +10,6 @@ const FlagContext = createContext<FlagContextValue | null>(null);
 
 export function FlagProvider({ children }: { children: React.ReactNode }) {
   const flags: FeatureFlags = {
-    showPriority: useFlag("showPriority"),
     showAvatars: useFlag("showAvatars"),
     showAiSummary: useFlag("showAiSummary"),
     showTimeline: useFlag("showTimeline"),

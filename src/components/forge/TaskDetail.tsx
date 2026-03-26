@@ -44,12 +44,10 @@ export function TaskDetail({ task, onClose }: TaskDetailProps) {
               <span className="text-foreground capitalize">{task.status}</span>
             </div>
           </div>
-          {flags.showPriority && (
-            <div>
-              <span className="text-muted-foreground block mb-1">Priority</span>
-              <PriorityBadge priority={task.priority} />
-            </div>
-          )}
+          <div>
+            <span className="text-muted-foreground block mb-1">Priority</span>
+            <PriorityBadge priority={task.priority} />
+          </div>
           <div>
             <span className="text-muted-foreground block mb-1">Assignee</span>
             {task.assignee ? (
