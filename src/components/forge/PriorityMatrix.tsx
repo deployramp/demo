@@ -1,4 +1,3 @@
-import { useFlags } from "@/lib/feature-flags";
 import type { Task } from "@/lib/types";
 
 interface PriorityMatrixProps {
@@ -6,9 +5,6 @@ interface PriorityMatrixProps {
 }
 
 export function PriorityMatrix({ tasks }: PriorityMatrixProps) {
-  const { flags } = useFlags();
-  if (!flags.showPriorityMatrix) return null;
-
   const activeTasks = tasks.filter((t) => t.status !== "done" && t.status !== "cancelled");
 
   // Quadrants based on priority and estimate
