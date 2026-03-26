@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { List, Columns, GanttChart, Search, Plus, X, ArrowUpDown, Check } from "lucide-react";
 import type { ViewMode, SortOption } from "@/lib/types";
 import { useFlags } from "@/lib/feature-flags";
+import { displayFeedback } from "@deployramp/sdk";
 import { AvatarStack } from "./UserAvatar";
 
 interface MetaBarProps {
@@ -115,7 +116,11 @@ export function MetaBar({ view, onViewChange, projectName, sprint, taskCount, se
               {sortOptions.map((opt) => (
                 <button
                   key={opt.value}
-                  onClick={() => { onSortChange(opt.value); setSortOpen(false); }}
+                  onClick={() => {
+                    onSortChange(opt.value);
+                    setSortOpen(false);
+                    if (opt.value !== "manual") setTimeout(() => displayFeedback("task-sorting"), 3000);
+                  }}
                   className={`w-full flex items-center gap-2 px-3 py-1.5 text-xs text-left transition-colors ${
                     sortBy === opt.value
                       ? "text-foreground bg-secondary"
@@ -138,7 +143,10 @@ export function MetaBar({ view, onViewChange, projectName, sprint, taskCount, se
           return (
             <button
               key={opt.mode}
-              onClick={() => onViewChange(opt.mode)}
+              onClick={() => {
+                onViewChange(opt.mode);
+                if (opt.flagKey === "showTimeline") setTimeout(() => displayFeedback("showTimeline"), 3000);
+              }}
               className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors duration-150 ${
                 view === opt.mode
                   ? "bg-background text-foreground shadow-sm"

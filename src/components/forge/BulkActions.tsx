@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, ArrowRight, Tag, X } from "lucide-react";
 import { useFlags } from "@/lib/feature-flags";
+import { displayFeedback } from "@deployramp/sdk";
 
 interface BulkActionsProps {
   selectedCount: number;
@@ -24,15 +25,15 @@ export function BulkActions({ selectedCount, onClear }: BulkActionsProps) {
             {selectedCount} selected
           </span>
           <div className="w-px h-4 bg-border" />
-          <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+          <button onClick={() => displayFeedback("showBulkActions")} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
             <ArrowRight className="w-3.5 h-3.5" />
             Move
           </button>
-          <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+          <button onClick={() => displayFeedback("showBulkActions")} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
             <Tag className="w-3.5 h-3.5" />
             Label
           </button>
-          <button className="flex items-center gap-1.5 text-xs text-destructive hover:text-destructive/80 transition-colors">
+          <button onClick={() => displayFeedback("showBulkActions")} className="flex items-center gap-1.5 text-xs text-destructive hover:text-destructive/80 transition-colors">
             <Trash2 className="w-3.5 h-3.5" />
             Delete
           </button>
