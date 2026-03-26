@@ -70,7 +70,7 @@ export function TaskRow({ task, selected, onSelect, onOpen }: TaskRowProps) {
       )}
 
       {/* Priority */}
-      {flags.showPriority && task.priority !== "none" && (
+      {task.priority !== "none" && (
         <PriorityBadge priority={task.priority} />
       )}
 

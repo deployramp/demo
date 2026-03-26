@@ -20,7 +20,6 @@ export interface Task {
 }
 
 export interface FeatureFlags {
-  showPriority: boolean;
   showAvatars: boolean;
   showAiSummary: boolean;
   showTimeline: boolean;
