@@ -1,7 +1,8 @@
 import { useRef, useEffect, useState } from "react";
-import { List, Columns, GanttChart, Search, Plus, X, ArrowUpDown, Check } from "lucide-react";
+import { List, Columns, GanttChart, Search, Plus, X, ArrowUpDown, Check, MessageSquare } from "lucide-react";
 import type { ViewMode, SortOption } from "@/lib/types";
 import { useFlags } from "@/lib/feature-flags";
+import { displayFeedback } from "@deployramp/sdk";
 import { AvatarStack } from "./UserAvatar";
 
 interface MetaBarProps {
@@ -154,6 +155,14 @@ export function MetaBar({ view, onViewChange, projectName, sprint, taskCount, se
 
       {/* Presence */}
       {flags.showAvatars && <AvatarStack userIds={["u1", "u2", "u3"]} />}
+
+      <button
+        onClick={() => displayFeedback("forge")}
+        className="flex items-center gap-1 bg-secondary text-muted-foreground px-2.5 py-1 rounded text-xs font-medium hover:text-foreground hover:bg-secondary/80 transition-colors"
+      >
+        <MessageSquare className="w-3.5 h-3.5" />
+        Feedback
+      </button>
 
       <button className="flex items-center gap-1 bg-primary text-primary-foreground px-2.5 py-1 rounded text-xs font-medium hover:bg-primary/90 transition-colors">
         <Plus className="w-3.5 h-3.5" />
