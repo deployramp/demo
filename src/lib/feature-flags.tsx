@@ -13,7 +13,7 @@ export function FlagProvider({ children }: { children: React.ReactNode }) {
     showAvatars: useFlag("showAvatars"),
     showAiSummary: useFlag("showAiSummary"),
     showTimeline: useFlag("showTimeline"),
-    showBulkActions: useFlag("showBulkActions"),
+    showPriorityMatrix: useFlag("showPriorityMatrix"),
     showEstimates: useFlag("showEstimates"),
     showLabels: useFlag("showLabels"),
     experimentalUI: useFlag("experimentalUI"),
