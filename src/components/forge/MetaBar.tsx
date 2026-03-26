@@ -161,7 +161,7 @@ export function MetaBar({ view, onViewChange, projectName, sprint, taskCount, se
       </div>
 
       {/* Presence */}
-      {flags.showAvatars && <AvatarStack userIds={["u1", "u2", "u3"]} />}
+      <AvatarStack userIds={["u1", "u2", "u3"]} />
 
       <button className="flex items-center gap-1 bg-primary text-primary-foreground px-2.5 py-1 rounded text-xs font-medium hover:bg-primary/90 transition-colors">
         <Plus className="w-3.5 h-3.5" />

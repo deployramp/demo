@@ -82,7 +82,7 @@ export function TaskRow({ task, selected, onSelect, onOpen }: TaskRowProps) {
       )}
 
       {/* Assignee */}
-      {flags.showAvatars && task.assignee && (
+      {task.assignee && (
         <UserAvatar userId={task.assignee} />
       )}
     </motion.div>
