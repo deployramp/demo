@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { List, Columns, GanttChart, Search, Plus, X, ArrowUpDown, Check } from "lucide-react";
+import { List, Columns, Search, Plus, X, ArrowUpDown, Check } from "lucide-react";
 import type { ViewMode, SortOption } from "@/lib/types";
 import { useFlags } from "@/lib/feature-flags";
 import { displayFeedback } from "@deployramp/sdk";
@@ -25,10 +25,9 @@ const sortOptions: { value: SortOption; label: string }[] = [
   { value: "created", label: "Created" },
 ];
 
-const viewOptions: { mode: ViewMode; icon: React.ReactNode; label: string; flagKey?: string }[] = [
+const viewOptions: { mode: ViewMode; icon: React.ReactNode; label: string }[] = [
   { mode: "list", icon: <List className="w-3.5 h-3.5" />, label: "List" },
   { mode: "board", icon: <Columns className="w-3.5 h-3.5" />, label: "Board" },
-  { mode: "timeline", icon: <GanttChart className="w-3.5 h-3.5" />, label: "Timeline", flagKey: "showTimeline" },
 ];
 
 export function MetaBar({ view, onViewChange, projectName, sprint, taskCount, searchQuery, onSearchChange, sortBy, onSortChange }: MetaBarProps) {
@@ -138,26 +137,20 @@ export function MetaBar({ view, onViewChange, projectName, sprint, taskCount, se
 
       {/* View Switcher */}
       <div className="flex items-center bg-secondary rounded p-0.5 gap-0.5">
-        {viewOptions.map((opt) => {
-          if (opt.flagKey && !flags[opt.flagKey as keyof typeof flags]) return null;
-          return (
-            <button
-              key={opt.mode}
-              onClick={() => {
-                onViewChange(opt.mode);
-                if (opt.flagKey === "showTimeline") setTimeout(() => displayFeedback("showTimeline"), 3000);
-              }}
-              className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors duration-150 ${
-                view === opt.mode
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {opt.icon}
-              <span>{opt.label}</span>
-            </button>
-          );
-        })}
+        {viewOptions.map((opt) => (
+          <button
+            key={opt.mode}
+            onClick={() => onViewChange(opt.mode)}
+            className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors duration-150 ${
+              view === opt.mode
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {opt.icon}
+            <span>{opt.label}</span>
+          </button>
+        ))}
       </div>
 
       {/* Presence */}

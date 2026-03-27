@@ -7,12 +7,10 @@ import { UserAvatar } from "./UserAvatar";
 
 interface TaskRowProps {
   task: Task;
-  selected: boolean;
-  onSelect: (id: string) => void;
   onOpen: (id: string) => void;
 }
 
-export function TaskRow({ task, selected, onSelect, onOpen }: TaskRowProps) {
+export function TaskRow({ task, onOpen }: TaskRowProps) {
   const { flags } = useFlags();
 
   return (
@@ -21,30 +19,9 @@ export function TaskRow({ task, selected, onSelect, onOpen }: TaskRowProps) {
       animate={{ opacity: 1 }}
       whileHover={{ backgroundColor: "rgba(255,255,255,0.03)" }}
       transition={{ duration: 0.15 }}
-      className={`group flex h-9 items-center border-b border-border px-4 gap-3 cursor-default select-none ${
-        selected ? "bg-primary/5 border-l-2 border-l-primary" : ""
-      }`}
+      className="group flex h-9 items-center border-b border-border px-4 gap-3 cursor-default select-none"
       onClick={() => onOpen(task.id)}
     >
-      {/* Checkbox */}
-      <div
-        onClick={(e) => {
-          e.stopPropagation();
-          onSelect(task.id);
-        }}
-        className={`flex-none w-4 h-4 rounded-sm border cursor-pointer transition-colors duration-150 flex items-center justify-center ${
-          selected
-            ? "bg-primary border-primary"
-            : "border-muted-foreground/30 hover:border-muted-foreground/60"
-        }`}
-      >
-        {selected && (
-          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-            <path d="M1 4L3.5 6.5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary-foreground" />
-          </svg>
-        )}
-      </div>
-
       {/* Status */}
       <StatusIcon status={task.status} />
 
