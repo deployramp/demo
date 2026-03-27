@@ -1,7 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, ArrowRight, Tag, X } from "lucide-react";
-import { useFlags } from "@/lib/feature-flags";
-import { displayFeedback } from "@deployramp/sdk";
 
 interface BulkActionsProps {
   selectedCount: number;
@@ -9,11 +7,9 @@ interface BulkActionsProps {
 }
 
 export function BulkActions({ selectedCount, onClear }: BulkActionsProps) {
-  const { flags } = useFlags();
-
   return (
     <AnimatePresence>
-      {flags.showBulkActions && selectedCount > 0 && (
+      {selectedCount > 0 && (
         <motion.div
           initial={{ y: 60, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
