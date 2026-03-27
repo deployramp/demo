@@ -8,8 +8,10 @@ import { StatsBar } from "@/components/forge/StatsBar";
 import { TaskRow } from "@/components/forge/TaskRow";
 import { BoardView } from "@/components/forge/BoardView";
 import { TaskDetail } from "@/components/forge/TaskDetail";
+import { useFlags } from "@/lib/feature-flags";
 
 const Index = () => {
+  const { flags } = useFlags();
   const [activeProject, setActiveProject] = useState("forge");
   const [view, setView] = useState<ViewMode>("list");
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
@@ -34,7 +36,7 @@ const Index = () => {
   }, [projectTasks, searchQuery]);
 
   const sortedTasks = useMemo(() => {
-    if (sortBy === "manual") return filteredTasks;
+    if (!flags.taskSorting || sortBy === "manual") return filteredTasks;
     const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3, none: 4 };
     return [...filteredTasks].sort((a, b) => {
       switch (sortBy) {
@@ -54,7 +56,7 @@ const Index = () => {
           return 0;
       }
     });
-  }, [filteredTasks, sortBy]);
+  }, [filteredTasks, sortBy, flags.taskSorting]);
 
   const project = projects.find((p) => p.id === activeProject);
   const openTask = openTaskId ? allTasks.find((t) => t.id === openTaskId) : null;

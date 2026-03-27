@@ -21,6 +21,7 @@ export interface Task {
 
 export interface FeatureFlags {
   showLabels: boolean;
+  taskSorting: boolean;
 }
 
 export interface Project {
