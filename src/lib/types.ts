@@ -1,8 +1,6 @@
 export type Priority = "urgent" | "high" | "medium" | "low" | "none";
 export type Status = "backlog" | "todo" | "in-progress" | "done" | "cancelled";
 export type ViewMode = "list" | "board";
-export type SortOption = "manual" | "priority" | "dueDate" | "title" | "created";
-
 export interface Task {
   id: string;
   key: string;
@@ -21,7 +19,6 @@ export interface Task {
 
 export interface FeatureFlags {
   showLabels: boolean;
-  taskSorting: boolean;
 }
 
 export interface Project {

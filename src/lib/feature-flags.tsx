@@ -11,7 +11,6 @@ const FlagContext = createContext<FlagContextValue | null>(null);
 export function FlagProvider({ children }: { children: React.ReactNode }) {
   const flags: FeatureFlags = {
     showLabels: useFlag("showLabels"),
-    taskSorting: useFlag("task-sorting"),
   };
 
   return (
