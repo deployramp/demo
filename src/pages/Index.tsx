@@ -1,24 +1,18 @@
 import { useState, useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
 import type { ViewMode, SortOption } from "@/lib/types";
-import { tasks as allTasks } from "@/lib/mock-data";
-import { projects } from "@/lib/mock-data";
+import { tasks as allTasks, projects } from "@/lib/mock-data";
 import { useFlags } from "@/lib/feature-flags";
 import { AppSidebar } from "@/components/forge/AppSidebar";
 import { MetaBar } from "@/components/forge/MetaBar";
-import { AiSummary } from "@/components/forge/AiSummary";
 import { StatsBar } from "@/components/forge/StatsBar";
-import { PriorityMatrix } from "@/components/forge/PriorityMatrix";
 import { TaskRow } from "@/components/forge/TaskRow";
 import { BoardView } from "@/components/forge/BoardView";
-import { TimelineView } from "@/components/forge/TimelineView";
 import { TaskDetail } from "@/components/forge/TaskDetail";
-import { BulkActions } from "@/components/forge/BulkActions";
 
 const Index = () => {
   const [activeProject, setActiveProject] = useState("forge");
   const [view, setView] = useState<ViewMode>("list");
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("manual");
@@ -71,15 +65,6 @@ const Index = () => {
   const openTask = openTaskId ? allTasks.find((t) => t.id === openTaskId) : null;
   const currentSprint = activeProject === "all" ? "All Projects" : (projectTasks[0]?.sprint || "Sprint 12");
 
-  const toggleSelect = (id: string) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
   // Group tasks by status for list view
   const statusGroups = useMemo(() => {
     const order = ["in-progress", "todo", "backlog", "done", "cancelled"] as const;
@@ -112,9 +97,7 @@ const Index = () => {
           onSortChange={setSortBy}
         />
 
-        <AiSummary />
         <StatsBar tasks={projectTasks} />
-        <PriorityMatrix tasks={projectTasks} />
 
         {/* Content */}
         {view === "list" && (
@@ -131,8 +114,6 @@ const Index = () => {
                   <TaskRow
                     key={task.id}
                     task={task}
-                    selected={selectedIds.has(task.id)}
-                    onSelect={toggleSelect}
                     onOpen={setOpenTaskId}
                   />
                 ))}
@@ -142,19 +123,12 @@ const Index = () => {
         )}
 
         {view === "board" && <BoardView tasks={sortedTasks} onOpen={setOpenTaskId} />}
-
-        {view === "timeline" && flags.showTimeline && (
-          <TimelineView tasks={sortedTasks} onOpen={setOpenTaskId} />
-        )}
       </div>
 
       {/* Detail Panel */}
       <AnimatePresence>
         {openTask && <TaskDetail task={openTask} onClose={() => setOpenTaskId(null)} />}
       </AnimatePresence>
-
-      {/* Bulk Actions */}
-      <BulkActions selectedCount={selectedIds.size} onClear={() => setSelectedIds(new Set())} />
 
     </div>
   );
