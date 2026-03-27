@@ -1,6 +1,8 @@
 import { useRef, useEffect, useState } from "react";
 import { List, Columns, Search, X, ArrowUpDown, Check } from "lucide-react";
 import type { ViewMode, SortOption } from "@/lib/types";
+import { useFlag } from "@deployramp/sdk/react";
+import { displayFeedback } from "@deployramp/sdk";
 import { AvatarStack } from "./UserAvatar";
 
 interface MetaBarProps {
@@ -32,6 +34,7 @@ export function MetaBar({ view, onViewChange, projectName, sprint, taskCount, se
   const searchRef = useRef<HTMLInputElement>(null);
   const [sortOpen, setSortOpen] = useState(false);
   const sortRef = useRef<HTMLDivElement>(null);
+  const sortingEnabled = useFlag('task-sorting');
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -92,42 +95,45 @@ export function MetaBar({ view, onViewChange, projectName, sprint, taskCount, se
       </div>
 
       {/* Sort */}
-      <div className="relative" ref={sortRef}>
-        <button
-          onClick={() => setSortOpen((o) => !o)}
-          className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors ${
-            sortBy !== "manual"
-              ? "bg-primary/10 text-primary ring-1 ring-primary/30"
-              : "bg-secondary text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <ArrowUpDown className="w-3.5 h-3.5" />
-          {sortBy !== "manual" && (
-            <span>{sortOptions.find((o) => o.value === sortBy)?.label}</span>
+      {sortingEnabled && (
+        <div className="relative" ref={sortRef}>
+          <button
+            onClick={() => setSortOpen((o) => !o)}
+            className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors ${
+              sortBy !== "manual"
+                ? "bg-primary/10 text-primary ring-1 ring-primary/30"
+                : "bg-secondary text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <ArrowUpDown className="w-3.5 h-3.5" />
+            {sortBy !== "manual" && (
+              <span>{sortOptions.find((o) => o.value === sortBy)?.label}</span>
+            )}
+          </button>
+          {sortOpen && (
+            <div className="absolute top-full right-0 mt-1 bg-popover border border-border rounded-md shadow-md py-1 z-50 min-w-[140px]">
+              {sortOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => {
+                    onSortChange(opt.value);
+                    setSortOpen(false);
+                    displayFeedback('task-sorting', 'How do you like the new task sorting options?');
+                  }}
+                  className={`w-full flex items-center gap-2 px-3 py-1.5 text-xs text-left transition-colors ${
+                    sortBy === opt.value
+                      ? "text-foreground bg-secondary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  }`}
+                >
+                  <Check className={`w-3 h-3 ${sortBy === opt.value ? "opacity-100" : "opacity-0"}`} />
+                  {opt.label}
+                </button>
+              ))}
+            </div>
           )}
-        </button>
-        {sortOpen && (
-          <div className="absolute top-full right-0 mt-1 bg-popover border border-border rounded-md shadow-md py-1 z-50 min-w-[140px]">
-            {sortOptions.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => {
-                  onSortChange(opt.value);
-                  setSortOpen(false);
-                }}
-                className={`w-full flex items-center gap-2 px-3 py-1.5 text-xs text-left transition-colors ${
-                  sortBy === opt.value
-                    ? "text-foreground bg-secondary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                }`}
-              >
-                <Check className={`w-3 h-3 ${sortBy === opt.value ? "opacity-100" : "opacity-0"}`} />
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* View Switcher */}
       <div className="flex items-center bg-secondary rounded p-0.5 gap-0.5">
