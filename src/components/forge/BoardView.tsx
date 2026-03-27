@@ -53,7 +53,7 @@ export function BoardView({ tasks, onOpen }: BoardViewProps) {
                       {task.estimate && (
                         <span className="text-[10px] font-mono text-muted-foreground">{task.estimate}p</span>
                       )}
-                      {flags.showAvatars && task.assignee && <UserAvatar userId={task.assignee} />}
+                      {task.assignee && <UserAvatar userId={task.assignee} />}
                     </div>
                   </div>
                 ))}
