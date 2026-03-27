@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
 import type { ViewMode, SortOption } from "@/lib/types";
+import { useFlag } from "@deployramp/sdk/react";
 import { tasks as allTasks, projects } from "@/lib/mock-data";
 import { AppSidebar } from "@/components/forge/AppSidebar";
 import { MetaBar } from "@/components/forge/MetaBar";
@@ -10,6 +11,7 @@ import { BoardView } from "@/components/forge/BoardView";
 import { TaskDetail } from "@/components/forge/TaskDetail";
 
 const Index = () => {
+  const enableTaskSorting = useFlag('task-sorting');
   const [activeProject, setActiveProject] = useState("forge");
   const [view, setView] = useState<ViewMode>("list");
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
@@ -34,7 +36,7 @@ const Index = () => {
   }, [projectTasks, searchQuery]);
 
   const sortedTasks = useMemo(() => {
-    if (sortBy === "manual") return filteredTasks;
+    if (!enableTaskSorting || sortBy === "manual") return filteredTasks;
     const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3, none: 4 };
     return [...filteredTasks].sort((a, b) => {
       switch (sortBy) {
@@ -54,7 +56,7 @@ const Index = () => {
           return 0;
       }
     });
-  }, [filteredTasks, sortBy]);
+  }, [filteredTasks, sortBy, enableTaskSorting]);
 
   const project = projects.find((p) => p.id === activeProject);
   const openTask = openTaskId ? allTasks.find((t) => t.id === openTaskId) : null;

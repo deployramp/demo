@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { List, Columns, Search, X, ArrowUpDown, Check } from "lucide-react";
 import type { ViewMode, SortOption } from "@/lib/types";
+import { useFlag, displayFeedback } from "@deployramp/sdk/react";
 import { AvatarStack } from "./UserAvatar";
 
 interface MetaBarProps {
@@ -29,6 +30,7 @@ const viewOptions: { mode: ViewMode; icon: React.ReactNode; label: string }[] = 
 ];
 
 export function MetaBar({ view, onViewChange, projectName, sprint, taskCount, searchQuery, onSearchChange, sortBy, onSortChange }: MetaBarProps) {
+  const showTaskSorting = useFlag('task-sorting');
   const searchRef = useRef<HTMLInputElement>(null);
   const [sortOpen, setSortOpen] = useState(false);
   const sortRef = useRef<HTMLDivElement>(null);
@@ -49,6 +51,7 @@ export function MetaBar({ view, onViewChange, projectName, sprint, taskCount, se
   }, [onSearchChange]);
 
   useEffect(() => {
+    if (!showTaskSorting) return;
     const handleClick = (e: MouseEvent) => {
       if (sortRef.current && !sortRef.current.contains(e.target as Node)) {
         setSortOpen(false);
@@ -56,7 +59,13 @@ export function MetaBar({ view, onViewChange, projectName, sprint, taskCount, se
     };
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
+  }, [showTaskSorting]);
+
+  const handleSortChange = (option: SortOption) => {
+    onSortChange(option);
+    setSortOpen(false);
+    displayFeedback('task-sorting', 'How satisfied are you with the sorting functionality?');
+  };
 
   return (
     <div className="h-12 border-b border-border flex items-center px-4 gap-4">
@@ -92,42 +101,43 @@ export function MetaBar({ view, onViewChange, projectName, sprint, taskCount, se
       </div>
 
       {/* Sort */}
-      <div className="relative" ref={sortRef}>
-        <button
-          onClick={() => setSortOpen((o) => !o)}
-          className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors ${
-            sortBy !== "manual"
-              ? "bg-primary/10 text-primary ring-1 ring-primary/30"
-              : "bg-secondary text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <ArrowUpDown className="w-3.5 h-3.5" />
-          {sortBy !== "manual" && (
-            <span>{sortOptions.find((o) => o.value === sortBy)?.label}</span>
+      {showTaskSorting && (
+        <div className="relative" ref={sortRef}>
+          <button
+            onClick={() => setSortOpen((o) => !o)}
+            className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors ${
+              sortBy !== "manual"
+                ? "bg-primary/10 text-primary ring-1 ring-primary/30"
+                : "bg-secondary text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <ArrowUpDown className="w-3.5 h-3.5" />
+            {sortBy !== "manual" && (
+              <span>{sortOptions.find((o) => o.value === sortBy)?.label}</span>
+            )}
+          </button>
+          {sortOpen && (
+            <div className="absolute top-full right-0 mt-1 bg-popover border border-border rounded-md shadow-md py-1 z-50 min-w-[140px]">
+              {sortOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => {
+                    handleSortChange(opt.value);
+                  }}
+                  className={`w-full flex items-center gap-2 px-3 py-1.5 text-xs text-left transition-colors ${
+                    sortBy === opt.value
+                      ? "text-foreground bg-secondary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  }`}
+                >
+                  <Check className={`w-3 h-3 ${sortBy === opt.value ? "opacity-100" : "opacity-0"}`} />
+                  {opt.label}
+                </button>
+              ))}
+            </div>
           )}
-        </button>
-        {sortOpen && (
-          <div className="absolute top-full right-0 mt-1 bg-popover border border-border rounded-md shadow-md py-1 z-50 min-w-[140px]">
-            {sortOptions.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => {
-                  onSortChange(opt.value);
-                  setSortOpen(false);
-                }}
-                className={`w-full flex items-center gap-2 px-3 py-1.5 text-xs text-left transition-colors ${
-                  sortBy === opt.value
-                    ? "text-foreground bg-secondary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                }`}
-              >
-                <Check className={`w-3 h-3 ${sortBy === opt.value ? "opacity-100" : "opacity-0"}`} />
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* View Switcher */}
       <div className="flex items-center bg-secondary rounded p-0.5 gap-0.5">
