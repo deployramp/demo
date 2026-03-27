@@ -1,4 +1,4 @@
-import { LayoutGrid, Settings, Zap } from "lucide-react";
+import { LayoutGrid } from "lucide-react";
 import { projects } from "@/lib/mock-data";
 
 interface AppSidebarProps {
@@ -11,7 +11,7 @@ export function AppSidebar({ activeProject, onProjectChange }: AppSidebarProps) 
     <aside className="w-60 h-screen border-r border-border bg-sidebar flex flex-col">
       {/* Logo */}
       <div className="h-12 flex items-center px-4 border-b border-border gap-2">
-        <Zap className="w-4 h-4 text-primary" />
+        <img src="/favicon.svg" alt="Forge" className="w-5 h-5" />
         <span className="text-sm font-semibold text-foreground tracking-tight">Forge</span>
         <span className="ml-auto text-[10px] font-mono text-muted-foreground">v2.4.0-β</span>
       </div>
@@ -53,13 +53,6 @@ export function AppSidebar({ activeProject, onProjectChange }: AppSidebarProps) 
         </button>
       </div>
 
-      {/* Footer */}
-      <div className="border-t border-border p-2 flex flex-col gap-0.5">
-        <button className="flex items-center gap-2 px-2 py-1.5 text-sm text-sidebar-foreground hover:bg-secondary/50 transition-colors rounded">
-          <Settings className="w-4 h-4" />
-          <span>Settings</span>
-        </button>
-      </div>
     </aside>
   );
 }
