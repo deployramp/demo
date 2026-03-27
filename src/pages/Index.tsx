@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
+import { useFlag } from '@deployramp/sdk';
 import type { ViewMode, SortOption } from "@/lib/types";
 import { tasks as allTasks, projects } from "@/lib/mock-data";
 import { AppSidebar } from "@/components/forge/AppSidebar";
@@ -10,6 +11,7 @@ import { BoardView } from "@/components/forge/BoardView";
 import { TaskDetail } from "@/components/forge/TaskDetail";
 
 const Index = () => {
+  const taskSortingEnabled = useFlag('task-sorting');
   const [activeProject, setActiveProject] = useState("forge");
   const [view, setView] = useState<ViewMode>("list");
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
@@ -56,6 +58,9 @@ const Index = () => {
     });
   }, [filteredTasks, sortBy]);
 
+  // Use sortedTasks if feature flag is enabled, otherwise use filteredTasks
+  const tasksToDisplay = taskSortingEnabled ? sortedTasks : filteredTasks;
+
   const project = projects.find((p) => p.id === activeProject);
   const openTask = openTaskId ? allTasks.find((t) => t.id === openTaskId) : null;
   const currentSprint = activeProject === "all" ? "All Projects" : (projectTasks[0]?.sprint || "Sprint 12");
@@ -66,10 +71,10 @@ const Index = () => {
     return order
       .map((status) => ({
         status,
-        tasks: sortedTasks.filter((t) => t.status === status),
+        tasks: tasksToDisplay.filter((t) => t.status === status),
       }))
       .filter((g) => g.tasks.length > 0);
-  }, [sortedTasks]);
+  }, [tasksToDisplay]);
 
   return (
     <div className="flex h-screen w-full bg-background overflow-hidden">
@@ -117,7 +122,7 @@ const Index = () => {
           </div>
         )}
 
-        {view === "board" && <BoardView tasks={sortedTasks} onOpen={setOpenTaskId} />}
+        {view === "board" && <BoardView tasks={tasksToDisplay} onOpen={setOpenTaskId} />}
       </div>
 
       {/* Detail Panel */}
