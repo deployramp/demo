@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { List, Columns, Search, Plus, X, ArrowUpDown, Check } from "lucide-react";
+import { List, Columns, Search, X, ArrowUpDown, Check } from "lucide-react";
 import type { ViewMode, SortOption } from "@/lib/types";
 import { useFlags } from "@/lib/feature-flags";
 import { displayFeedback } from "@deployramp/sdk";
@@ -156,10 +156,6 @@ export function MetaBar({ view, onViewChange, projectName, sprint, taskCount, se
       {/* Presence */}
       <AvatarStack userIds={["u1", "u2", "u3"]} />
 
-      <button className="flex items-center gap-1 bg-primary text-primary-foreground px-2.5 py-1 rounded text-xs font-medium hover:bg-primary/90 transition-colors">
-        <Plus className="w-3.5 h-3.5" />
-        New
-      </button>
     </div>
   );
 }

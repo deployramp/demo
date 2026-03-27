@@ -1,4 +1,4 @@
-import { LayoutGrid, Layers, Settings, BarChart3, Zap } from "lucide-react";
+import { LayoutGrid, Settings, Zap } from "lucide-react";
 import { projects } from "@/lib/mock-data";
 
 interface AppSidebarProps {
@@ -50,14 +50,6 @@ export function AppSidebar({ activeProject, onProjectChange }: AppSidebarProps) 
         >
           <LayoutGrid className="w-4 h-4" />
           <span>All Tasks</span>
-        </button>
-        <button className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-sidebar-foreground hover:bg-secondary/50 transition-colors">
-          <Layers className="w-4 h-4" />
-          <span>Sprints</span>
-        </button>
-        <button className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-sidebar-foreground hover:bg-secondary/50 transition-colors">
-          <BarChart3 className="w-4 h-4" />
-          <span>Analytics</span>
         </button>
       </div>
 
