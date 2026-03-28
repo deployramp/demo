@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
+import { useFlag } from "@deployramp/sdk/react";
 import type { ViewMode, SortOption } from "@/lib/types";
 import { tasks as allTasks, projects } from "@/lib/mock-data";
 import { AppSidebar } from "@/components/forge/AppSidebar";
@@ -15,6 +16,7 @@ const Index = () => {
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("manual");
+  const taskSortingEnabled = useFlag('task-sorting');
 
   const projectTasks = useMemo(
     () => activeProject === "all" ? allTasks : allTasks.filter((t) => t.project === activeProject),
@@ -34,7 +36,7 @@ const Index = () => {
   }, [projectTasks, searchQuery]);
 
   const sortedTasks = useMemo(() => {
-    if (sortBy === "manual") return filteredTasks;
+    if (!taskSortingEnabled || sortBy === "manual") return filteredTasks;
     const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3, none: 4 };
     return [...filteredTasks].sort((a, b) => {
       switch (sortBy) {
@@ -54,7 +56,7 @@ const Index = () => {
           return 0;
       }
     });
-  }, [filteredTasks, sortBy]);
+  }, [filteredTasks, sortBy, taskSortingEnabled]);
 
   const project = projects.find((p) => p.id === activeProject);
   const openTask = openTaskId ? allTasks.find((t) => t.id === openTaskId) : null;
@@ -63,13 +65,14 @@ const Index = () => {
   // Group tasks by status for list view
   const statusGroups = useMemo(() => {
     const order = ["in-progress", "todo", "backlog", "done", "cancelled"] as const;
+    const tasksToGroup = taskSortingEnabled ? sortedTasks : filteredTasks;
     return order
       .map((status) => ({
         status,
-        tasks: sortedTasks.filter((t) => t.status === status),
+        tasks: tasksToGroup.filter((t) => t.status === status),
       }))
       .filter((g) => g.tasks.length > 0);
-  }, [sortedTasks]);
+  }, [sortedTasks, filteredTasks, taskSortingEnabled]);
 
   return (
     <div className="flex h-screen w-full bg-background overflow-hidden">
@@ -117,7 +120,7 @@ const Index = () => {
           </div>
         )}
 
-        {view === "board" && <BoardView tasks={sortedTasks} onOpen={setOpenTaskId} />}
+        {view === "board" && <BoardView tasks={taskSortingEnabled ? sortedTasks : filteredTasks} onOpen={setOpenTaskId} />}
       </div>
 
       {/* Detail Panel */}
