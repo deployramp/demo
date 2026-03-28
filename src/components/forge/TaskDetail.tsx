@@ -1,11 +1,14 @@
 import { X } from "lucide-react";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 import type { Task } from "@/lib/types";
 import { getDueDateStatus } from "@/lib/utils";
 import { StatusIcon } from "./StatusIcon";
 import { PriorityBadge } from "./PriorityBadge";
 import { UserAvatar } from "./UserAvatar";
 import { useFlags } from "@/lib/feature-flags";
+import { useFlag } from "@deployramp/sdk/react";
+import { displayFeedback } from "@deployramp/sdk";
 
 interface TaskDetailProps {
   task: Task;
@@ -15,6 +18,16 @@ interface TaskDetailProps {
 export function TaskDetail({ task, onClose }: TaskDetailProps) {
   const { flags } = useFlags();
   const dueDateStatus = getDueDateStatus(task.dueDate, task.status);
+  const dueDateStatusFlagEnabled = useFlag("task-due-date-status");
+
+  useEffect(() => {
+    if (dueDateStatusFlagEnabled && task.dueDate) {
+      const timer = setTimeout(() => {
+        displayFeedback("task-due-date-status", "How helpful is the due date status indicator?");
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [dueDateStatusFlagEnabled, task.dueDate]);
 
   return (
     <motion.div
@@ -71,16 +84,20 @@ export function TaskDetail({ task, onClose }: TaskDetailProps) {
           {task.dueDate && (
             <div>
               <span className="text-muted-foreground block mb-1">Due</span>
-              <span className={[
-                "font-mono",
-                dueDateStatus === "overdue" ? "text-red-400" :
-                dueDateStatus === "soon"    ? "text-amber-400" :
-                                              "text-foreground",
-              ].join(" ")}>
-                {task.dueDate}
-                {dueDateStatus === "overdue" && <span className="ml-1 text-[10px]">overdue</span>}
-                {dueDateStatus === "soon"    && <span className="ml-1 text-[10px]">due soon</span>}
-              </span>
+              {dueDateStatusFlagEnabled ? (
+                <span className={[
+                  "font-mono",
+                  dueDateStatus === "overdue" ? "text-red-400" :
+                  dueDateStatus === "soon"    ? "text-amber-400" :
+                                                "text-foreground",
+                ].join(" ")}>
+                  {task.dueDate}
+                  {dueDateStatus === "overdue" && <span className="ml-1 text-[10px]">overdue</span>}
+                  {dueDateStatus === "soon"    && <span className="ml-1 text-[10px]">due soon</span>}
+                </span>
+              ) : (
+                <span className="text-foreground font-mono">{task.dueDate}</span>
+              )}
             </div>
           )}
         </div>
