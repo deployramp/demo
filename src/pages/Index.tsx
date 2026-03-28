@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
-import type { ViewMode } from "@/lib/types";
+import { flag } from "@deployramp/sdk";
+import type { ViewMode, SortOption } from "@/lib/types";
 import { tasks as allTasks, projects } from "@/lib/mock-data";
 import { AppSidebar } from "@/components/forge/AppSidebar";
 import { MetaBar } from "@/components/forge/MetaBar";
@@ -10,10 +11,12 @@ import { BoardView } from "@/components/forge/BoardView";
 import { TaskDetail } from "@/components/forge/TaskDetail";
 
 const Index = () => {
+  const sortingEnabled = flag('task-sorting');
   const [activeProject, setActiveProject] = useState("forge");
   const [view, setView] = useState<ViewMode>("list");
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<SortOption>("manual");
 
   const projectTasks = useMemo(
     () => activeProject === "all" ? allTasks : allTasks.filter((t) => t.project === activeProject),
@@ -32,6 +35,29 @@ const Index = () => {
     );
   }, [projectTasks, searchQuery]);
 
+  const sortedTasks = useMemo(() => {
+    if (!sortingEnabled || sortBy === "manual") return filteredTasks;
+    const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3, none: 4 };
+    return [...filteredTasks].sort((a, b) => {
+      switch (sortBy) {
+        case "priority":
+          return priorityOrder[a.priority] - priorityOrder[b.priority];
+        case "dueDate": {
+          if (!a.dueDate && !b.dueDate) return 0;
+          if (!a.dueDate) return 1;
+          if (!b.dueDate) return -1;
+          return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+        }
+        case "title":
+          return a.title.localeCompare(b.title);
+        case "created":
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        default:
+          return 0;
+      }
+    });
+  }, [filteredTasks, sortBy, sortingEnabled]);
+
   const project = projects.find((p) => p.id === activeProject);
   const openTask = openTaskId ? allTasks.find((t) => t.id === openTaskId) : null;
   const currentSprint = activeProject === "all" ? "All Projects" : (projectTasks[0]?.sprint || "Sprint 12");
@@ -39,13 +65,14 @@ const Index = () => {
   // Group tasks by status for list view
   const statusGroups = useMemo(() => {
     const order = ["in-progress", "todo", "backlog", "done", "cancelled"] as const;
+    const tasksToUse = sortingEnabled ? sortedTasks : filteredTasks;
     return order
       .map((status) => ({
         status,
-        tasks: filteredTasks.filter((t) => t.status === status),
+        tasks: tasksToUse.filter((t) => t.status === status),
       }))
       .filter((g) => g.tasks.length > 0);
-  }, [filteredTasks]);
+  }, [sortedTasks, filteredTasks, sortingEnabled]);
 
   return (
     <div className="flex h-screen w-full bg-background overflow-hidden">
@@ -64,6 +91,8 @@ const Index = () => {
           taskCount={filteredTasks.length}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
         />
 
         <StatsBar tasks={projectTasks} />
@@ -91,7 +120,7 @@ const Index = () => {
           </div>
         )}
 
-        {view === "board" && <BoardView tasks={filteredTasks} onOpen={setOpenTaskId} />}
+        {view === "board" && <BoardView tasks={sortingEnabled ? sortedTasks : filteredTasks} onOpen={setOpenTaskId} />}
       </div>
 
       {/* Detail Panel */}
