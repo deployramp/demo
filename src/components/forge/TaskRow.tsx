@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import type { Task } from "@/lib/types";
 import { useFlags } from "@/lib/feature-flags";
+import { getDueDateStatus } from "@/lib/utils";
 import { StatusIcon } from "./StatusIcon";
 import { PriorityBadge } from "./PriorityBadge";
 import { UserAvatar } from "./UserAvatar";
@@ -12,6 +13,7 @@ interface TaskRowProps {
 
 export function TaskRow({ task, onOpen }: TaskRowProps) {
   const { flags } = useFlags();
+  const dueDateStatus = getDueDateStatus(task.dueDate, task.status);
 
   return (
     <motion.div
@@ -44,6 +46,18 @@ export function TaskRow({ task, onOpen }: TaskRowProps) {
             </span>
           ))}
         </div>
+      )}
+
+      {/* Due date */}
+      {task.dueDate && dueDateStatus !== null && (
+        <span className={[
+          "hidden md:inline text-[10px] font-mono",
+          dueDateStatus === "overdue" ? "text-red-400" :
+          dueDateStatus === "soon"    ? "text-amber-400" :
+                                        "text-muted-foreground",
+        ].join(" ")}>
+          {task.dueDate}
+        </span>
       )}
 
       {/* Priority */}
